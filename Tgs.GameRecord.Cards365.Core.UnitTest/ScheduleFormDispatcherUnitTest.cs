@@ -294,18 +294,10 @@ public class ScheduleFormDispatcherUnitTest
                 cancellationToken: Arg.Any<CancellationToken>())
             .ConfigureAwait(false);
 
-        var manualCommand = new ManualPullRecordCommand(
-            ApiUrl: new Uri(parameter.ApiUrl),
-            Website: parameter.Website,
-            Cert: parameter.Cert,
-            Extension1: parameter.Extension1,
-            StartTime: Arg.Any<DateTimeOffset>(),
-            EndTime: Arg.Any<DateTimeOffset>());
-
         await fakeManualPullRecord
             .Received(0)
             .ExecuteAsync(
-                command: Arg.Is(manualCommand),
+                command: Arg.Any<ManualPullRecordCommand>(),
                 cancellationToken: Arg.Any<CancellationToken>())
             .ConfigureAwait(false);
 
@@ -402,18 +394,10 @@ public class ScheduleFormDispatcherUnitTest
                 cancellationToken: Arg.Any<CancellationToken>())
             .ConfigureAwait(false);
 
-        var manualCommand = new ManualPullRecordCommand(
-            ApiUrl: new Uri(parameter.ApiUrl),
-            Website: parameter.Website,
-            Cert: parameter.Cert,
-            Extension1: parameter.Extension1,
-            StartTime: Arg.Any<DateTimeOffset>(),
-            EndTime: Arg.Any<DateTimeOffset>());
-
         await fakeManualPullRecord
             .Received(0)
             .ExecuteAsync(
-                command: Arg.Is(manualCommand),
+                command: Arg.Any<ManualPullRecordCommand>(),
                 cancellationToken: Arg.Any<CancellationToken>())
             .ConfigureAwait(false);
 
