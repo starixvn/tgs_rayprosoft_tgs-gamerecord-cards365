@@ -95,14 +95,9 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                     break;
                 }
 
-                nextTime = gameRecords.Max(x => x.UpdateTime)!.ToDateTimeOffset();
+                nextTime = gameRecords.OrderByDescending(x => x.UpdateTime).FirstOrDefault()!.UpdateTime.ToDateTimeOffset();
 
                 _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime}", command.Extension1, nextTime.ToString("O"));
-
-                if (!gameRecords.Any())
-                {
-                    continue;
-                }
 
                 foreach (var gameRecord in gameRecords)
                 {
