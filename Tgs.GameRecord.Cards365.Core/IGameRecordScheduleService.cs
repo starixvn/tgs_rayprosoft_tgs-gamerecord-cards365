@@ -19,5 +19,6 @@ public interface IGameRecordScheduleService
       GameRecordScheduleReply gameRecordSchedule,
       string extension1,
       DateTimeOffset nextTime,
+      string nextExternalRoundId,
       CancellationToken cancellationToken = default);
 }

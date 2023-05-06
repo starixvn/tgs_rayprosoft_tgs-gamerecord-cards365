@@ -69,6 +69,7 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
             var config = _gameRecordScheduleService.GetConfig(gameRecordSchedule);
 
             var nextTime = config.NextTime;
+            var nextExternalRoundId = config.NextExternalRoundId;
 
             while (true)
             {
@@ -95,9 +96,32 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                     break;
                 }
 
-                nextTime = gameRecords.OrderByDescending(x => x.UpdateTime).FirstOrDefault()!.UpdateTime.ToDateTimeOffset();
+                var last = gameRecords
+                    .OrderBy(x => new { x.UpdateTime, x.ExternalRoundId })
+                    .Select(x => new
+                    {
+                        x.ExternalRoundId,
+                        x.UpdateTime
+                    })
+                    .LastOrDefault();
 
-                _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime}", command.Extension1, nextTime.ToString("O"));
+                if (last == null)
+                {
+                    break;
+                }
+
+                if (DateTimeOffset.Compare(nextTime, last.UpdateTime.ToDateTimeOffset()) == 0 &&
+                    nextExternalRoundId.Equals(last.ExternalRoundId, StringComparison.OrdinalIgnoreCase))
+                {
+                    break;
+                }
+                else
+                {
+                    nextTime = last.UpdateTime.ToDateTimeOffset();
+                    nextExternalRoundId = last.ExternalRoundId;
+                }
+
+                _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalRoundId:{nextExternalRoundId}", command.Extension1, nextTime.ToString("O"), nextExternalRoundId);
 
                 foreach (var gameRecord in gameRecords)
                 {
@@ -125,11 +149,14 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                     }
                 }
             }
-            _ = await _gameRecordScheduleService.UpdateAsync(
-                gameRecordSchedule: gameRecordSchedule,
-                 extension1: command.Extension1,
-                 nextTime: nextTime,
-                 cancellationToken: cancellationToken).ConfigureAwait(false);
+            _ = await _gameRecordScheduleService
+                .UpdateAsync(
+                    gameRecordSchedule: gameRecordSchedule,
+                    extension1: command.Extension1,
+                    nextTime: nextTime,
+                    nextExternalRoundId: nextExternalRoundId,
+                    cancellationToken: cancellationToken)
+                .ConfigureAwait(false);
         }
         catch (Exception ex)
         {

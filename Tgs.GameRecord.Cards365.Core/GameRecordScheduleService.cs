@@ -45,7 +45,8 @@ internal class GameRecordScheduleService : IGameRecordScheduleService
 
         var config = new ScheduleConfig
         {
-            NextTime = nextTime
+            NextTime = nextTime,
+            NextExternalRoundId = string.Empty
         };
 
         var addRequest = new GameRecordScheduleAddRequest
@@ -67,11 +68,13 @@ internal class GameRecordScheduleService : IGameRecordScheduleService
         GameRecordScheduleReply gameRecordSchedule,
         string extension1,
         DateTimeOffset nextTime,
+        string nextExternalRoundId,
         CancellationToken cancellationToken = default)
     {
         var config = GetConfig(gameRecordSchedule);
 
         config.NextTime = nextTime;
+        config.NextExternalRoundId = nextExternalRoundId;
 
         gameRecordSchedule.Config = JsonSerializer.Serialize(config);
 

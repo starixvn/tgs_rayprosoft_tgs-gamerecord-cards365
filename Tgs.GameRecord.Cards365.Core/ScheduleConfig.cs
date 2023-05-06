@@ -3,4 +3,5 @@
 public record ScheduleConfig
 {
     public DateTimeOffset NextTime { get; set; }
+    public string NextExternalRoundId { get; set; } = default!;
 }
