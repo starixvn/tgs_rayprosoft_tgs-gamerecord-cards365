@@ -97,7 +97,8 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                 }
 
                 var last = gameRecords
-                    .OrderBy(x => new { x.UpdateTime, x.ExternalRoundId })
+                    .OrderBy(x => x.UpdateTime)
+                    .ThenBy(x => x.ExternalRoundId)
                     .Select(x => new
                     {
                         x.ExternalRoundId,
