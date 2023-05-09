@@ -100,7 +100,7 @@ public class GameRecordUtensilUnitTest
         Assert.Equal(source.ExternalCreatedOn.ToDateTimeOffset(), actual.ExternalCreatedOn);
         Assert.Equal(source.ExternalClosedOn.ToDateTimeOffset(), actual.ExternalClosedOn);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Bet);
-        Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
+        Assert.Equal(source.ValidBet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Turnover);
         Assert.Equal(source.Winloss.ToDecimal().GetValueOrDefault(0), actual.WinLoss);
         Assert.Equal(source.Settle.ToDecimal().GetValueOrDefault(0), actual.Settle);
@@ -197,7 +197,7 @@ public class GameRecordUtensilUnitTest
         Assert.Equal(source.ExternalCreatedOn.ToDateTimeOffset(), actual.ExternalCreatedOn);
         Assert.Equal(source.ExternalClosedOn.ToDateTimeOffset(), actual.ExternalClosedOn);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Bet);
-        Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
+        Assert.Equal(source.ValidBet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Turnover);
         Assert.Equal(source.Winloss.ToDecimal().GetValueOrDefault(0), actual.WinLoss);
         Assert.Equal(source.Settle.ToDecimal().GetValueOrDefault(0), actual.Settle);
@@ -295,7 +295,7 @@ public class GameRecordUtensilUnitTest
         Assert.Equal(source.ExternalCreatedOn.ToDateTimeOffset(), actual.ExternalCreatedOn);
         Assert.Equal(source.ExternalClosedOn.ToDateTimeOffset(), actual.ExternalClosedOn);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Bet);
-        Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
+        Assert.Equal(source.ValidBet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Turnover);
         Assert.Equal(source.Winloss.ToDecimal().GetValueOrDefault(0), actual.WinLoss);
         Assert.Equal(source.Settle.ToDecimal().GetValueOrDefault(0), actual.Settle);
@@ -373,7 +373,7 @@ public class GameRecordUtensilUnitTest
         Assert.Equal(source.ExternalCreatedOn.ToDateTimeOffset(), actual.ExternalCreatedOn);
         Assert.Equal(source.ExternalClosedOn.ToDateTimeOffset(), actual.ExternalClosedOn);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Bet);
-        Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
+        Assert.Equal(source.ValidBet.ToDecimal().GetValueOrDefault(0), actual.ValidBet);
         Assert.Equal(source.Bet.ToDecimal().GetValueOrDefault(0), actual.Turnover);
         Assert.Equal(source.Winloss.ToDecimal().GetValueOrDefault(0), actual.WinLoss);
         Assert.Equal(source.Settle.ToDecimal().GetValueOrDefault(0), actual.Settle);

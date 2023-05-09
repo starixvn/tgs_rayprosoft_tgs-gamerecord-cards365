@@ -63,7 +63,7 @@ internal class GameRecordUtensil : IGameRecordUtensil
         var externalCreatedOn = source.ExternalCreatedOn.ToDateTimeOffset();
         DateTimeOffset? externalClosedOn = source.IsClosed ? source.ExternalClosedOn.ToDateTimeOffset() : null;
         var bet = source.Bet.ToDecimal().GetValueOrDefault(0);
-        var validBet = source.Bet.ToDecimal().GetValueOrDefault(0);
+        var validBet = source.ValidBet.ToDecimal().GetValueOrDefault(0);
         var settle = source.Settle.ToDecimal().GetValueOrDefault(0);
         var commission = source.Commission.ToDecimal().GetValueOrDefault(0);
         var turnover = source.Bet.ToDecimal().GetValueOrDefault(0);
