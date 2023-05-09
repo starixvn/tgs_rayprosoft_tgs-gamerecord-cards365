@@ -91,7 +91,7 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
         {
             foreach (var gameRecord in payGameRecords)
             {
-                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameRecords}", DateTime.Now.ToString("o"), payGameRecords);
+                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameRecord);
 
                 try
                 {
