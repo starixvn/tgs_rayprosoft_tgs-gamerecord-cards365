@@ -66,7 +66,7 @@ internal class GameRecordUtensil : IGameRecordUtensil
         var validBet = source.ValidBet.ToDecimal().GetValueOrDefault(0);
         var settle = source.Settle.ToDecimal().GetValueOrDefault(0);
         var commission = source.Commission.ToDecimal().GetValueOrDefault(0);
-        var turnover = source.Bet.ToDecimal().GetValueOrDefault(0);
+        var turnover = source.ValidBet.ToDecimal().GetValueOrDefault(0);
         var winLoss = source.Winloss.ToDecimal().GetValueOrDefault(0);
 
         return new RecordInfo(
