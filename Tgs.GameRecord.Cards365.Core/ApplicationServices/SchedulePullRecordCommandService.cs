@@ -9,10 +9,9 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
 {
     private readonly IGameInterfaceCards365Client _client;
     private readonly IGameRecordScheduleService _gameRecordScheduleService;
-    private readonly IGameRecordUtensil _gameRecordUtensil;
     private readonly ILogger<SchedulePullRecordCommandService> _logger;
     private readonly ISchedulePullRecordLock _schedulePullRecordLock;
-    private readonly ICommandService<ScheduleHandleRecordCommand> _service;
+    private readonly ICommandService<HandleRecordCommand> _service;
     private readonly IUtensil _utensil;
 
     public SchedulePullRecordCommandService(
@@ -21,15 +20,13 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
         IUtensil utensil,
         IGameRecordScheduleService gameRecordScheduleService,
         IGameInterfaceCards365Client client,
-        IGameRecordUtensil gameRecordUtensil,
-        ICommandService<ScheduleHandleRecordCommand> service)
+        ICommandService<HandleRecordCommand> service)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _schedulePullRecordLock = schedulePullRecordLock ?? throw new ArgumentNullException(nameof(schedulePullRecordLock));
         _utensil = utensil ?? throw new ArgumentNullException(nameof(utensil));
         _gameRecordScheduleService = gameRecordScheduleService ?? throw new ArgumentNullException(nameof(gameRecordScheduleService));
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _gameRecordUtensil = gameRecordUtensil ?? throw new ArgumentNullException(nameof(gameRecordUtensil));
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
@@ -130,17 +127,9 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
 
                     try
                     {
-                        var record = await _gameRecordUtensil
-                            .SettlementConvertRecordAsync(
-                                gameRecord,
-                                cancellationToken)
-                            .ConfigureAwait(false);
-
-                        _logger.LogDebug("LogOn:{logOn} Message: Settlement. Record:{record}", DateTime.Now.ToString("o"), record);
-
                         await _service
                             .ExecuteAsync(
-                                command: new(record),
+                                command: new(gameRecord),
                                 cancellationToken: cancellationToken)
                             .ConfigureAwait(false);
                     }

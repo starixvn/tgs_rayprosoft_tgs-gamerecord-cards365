@@ -8,19 +8,16 @@ namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
 internal class ManualPullRecordCommandService : ICommandService<ManualPullRecordCommand>
 {
     private readonly IGameInterfaceCards365Client _client;
-    private readonly IGameRecordUtensil _gameRecordUtensil;
     private readonly ILogger<ManualPullRecordCommandService> _logger;
-    private readonly ICommandService<ManualHandleRecordCommand> _service;
+    private readonly ICommandService<HandleRecordCommand> _service;
 
     public ManualPullRecordCommandService(
         ILogger<ManualPullRecordCommandService> logger,
         IGameInterfaceCards365Client client,
-        IGameRecordUtensil gameRecordUtensil,
-        ICommandService<ManualHandleRecordCommand> service)
+        ICommandService<HandleRecordCommand> service)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _gameRecordUtensil = gameRecordUtensil ?? throw new ArgumentNullException(nameof(gameRecordUtensil));
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
@@ -50,17 +47,9 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
 
                 try
                 {
-                    var record = await _gameRecordUtensil
-                        .SettlementConvertRecordAsync(
-                            gameRecord,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-
-                    _logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. Record:{record}", DateTime.Now.ToString("o"), record);
-
                     await _service
                         .ExecuteAsync(
-                            command: new(record),
+                            command: new(gameRecord),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
@@ -95,17 +84,9 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
 
                 try
                 {
-                    var record = await _gameRecordUtensil
-                        .SettlementConvertRecordAsync(
-                            gameRecord,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-
-                    _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. Record:{record}", DateTime.Now.ToString("o"), record);
-
                     await _service
                         .ExecuteAsync(
-                            command: new(record),
+                            command: new(gameRecord),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
