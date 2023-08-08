@@ -37,7 +37,6 @@ public class HandleRecordCommandServiceUnitTest
                 AdditionalData = "{\"txId\":\"87032f02ea3d11ed853f5254002237ea\"}"
             });
 
-
         var gameProviderId = Guid.NewGuid();
         _ = fakeUtensil
             .GetGameProviderIdAsync(
@@ -144,7 +143,6 @@ public class HandleRecordCommandServiceUnitTest
                 Commission = 1.08m,
                 AdditionalData = "{\"txId\":\"b0d2caf0ee1511eda82a5254002237ea\",\"gameNumber\":\"449-1683601245-866371-1\",\"userId\":\"4uglyyqu4nae\",\"extension1\":\"cardp101\",\"status\":\"Pay\",\"tiles\":\"[a1, a1, a1, a2, a3, a4, a6, a7, a7, a8, a8, a9, d9, d9]\",\"gameId\":449,\"chair\":0,\"playId\":1,\"commission\":1.08,\"banker\":0,\"profit\":34.92,\"validbet\":34.92,\"bonus\":0,\"reward\":0,\"outMoney\":0,\"currency\":\"CNY\",\"updateTime\":\"05/09/2023 11:01:03.449\",\"createTime\":\"05/09/2023 11:00:50.320\",\"betTransTime\":\"05/09/2023 11:00:50.221\",\"payTransTime\":\"05/09/2023 11:01:03.354\",\"betAmount\":2087,\"realBetAmount\":36,\"payAmount\":2121.92,\"realPayAmount\":36}"
             });
-
 
         var gameProviderId = Guid.NewGuid();
         _ = fakeUtensil

@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using NATS.Client.JetStream;
-using Tgs.GameRounds.Work.Client;
+﻿using Tgs.GameRounds.Work.Client;
 using Tgs.GameRounds.Work.Common.Protos;
 using Tgs.ServiceUtility;
 
@@ -60,7 +58,6 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
         var turnover = 0.0m;
         var winLoss = 0.0m;
 
-
         if (command.Info.IsClosed)
         {
             status = RoundStatus.Closed;
@@ -96,6 +93,5 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
             additionalData: command.Info.AdditionalData,
             cancellationToken: cancellationToken)
         .ConfigureAwait(false);
-
     }
 }
