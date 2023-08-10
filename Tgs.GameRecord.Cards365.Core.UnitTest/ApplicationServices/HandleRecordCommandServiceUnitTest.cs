@@ -93,7 +93,7 @@ public class HandleRecordCommandServiceUnitTest
 
         await fakeClient
             .Received(1)
-            .RoundBidding(
+            .RoundExchangeRateBiddingAsync(
                 gameProviderId: Arg.Is(gameProviderId),
                 gameProviderCode: Arg.Is(gameProviderCode),
                 externalRoundId: Arg.Is(command.Info.ExternalRoundId),
@@ -200,7 +200,7 @@ public class HandleRecordCommandServiceUnitTest
 
         await fakeClient
             .Received(1)
-            .RoundBidding(
+            .RoundExchangeRateBiddingAsync(
                 gameProviderId: Arg.Is(gameProviderId),
                 gameProviderCode: Arg.Is(gameProviderCode),
                 externalRoundId: Arg.Is(command.Info.ExternalRoundId),
@@ -307,7 +307,7 @@ public class HandleRecordCommandServiceUnitTest
 
         await fakeClient
             .Received(1)
-            .RoundBidding(
+            .RoundExchangeRateBiddingAsync(
                 gameProviderId: Arg.Is(gameProviderId),
                 gameProviderCode: Arg.Is(gameProviderCode),
                 externalRoundId: Arg.Is(command.Info.ExternalRoundId),

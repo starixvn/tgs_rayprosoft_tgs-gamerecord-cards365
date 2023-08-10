@@ -69,7 +69,7 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
         }
 
         await _client
-        .RoundBidding(
+            .RoundExchangeRateBiddingAsync(
             gameProviderId: gameProviderId,
             gameProviderCode: gameProviderCode,
             externalRoundId: command.Info.ExternalRoundId,
@@ -92,6 +92,6 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
             playerWinLoss: winLoss,
             additionalData: command.Info.AdditionalData,
             cancellationToken: cancellationToken)
-        .ConfigureAwait(false);
+            .ConfigureAwait(false);
     }
 }
