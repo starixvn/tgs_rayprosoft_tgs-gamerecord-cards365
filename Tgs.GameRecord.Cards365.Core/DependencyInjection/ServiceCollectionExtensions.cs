@@ -33,11 +33,11 @@ public static class ServiceCollectionExtensions
         .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
         .AddGameInterfaceCards365Client(gameInterfaceCards365ClientOptions)
         .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
-        .AddGameRoundsWorkClient()
+        .AddGameRecordHandleClient()
         .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
         .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
         .AddSingleton<ISchedulePullRecordLock>(sp => ActivatorUtilities.CreateInstance<SchedulePullRecordLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
-        .AddTransient<IUtensil>(sp => ActivatorUtilities.CreateInstance<UtensilRepository>(sp, TimeSpan.FromHours(1)))
+        .AddSingleton<IUtensil, UtensilRepository>()
         .AddSingleton<ISystemClock, SystemClock>()
         .AddTransient<IGameRecordScheduleService, GameRecordScheduleService>();
 }

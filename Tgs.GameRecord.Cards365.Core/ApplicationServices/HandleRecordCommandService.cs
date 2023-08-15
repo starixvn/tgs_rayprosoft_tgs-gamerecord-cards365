@@ -1,54 +1,27 @@
-﻿using Tgs.GameRounds.Work.Client;
-using Tgs.GameRounds.Work.Common.Protos;
+﻿using Microsoft.Extensions.Options;
+using Tgs.GameRecord.Handle.Client;
+using Tgs.GameRecord.Handle.Common.Protos;
 using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
 
 internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
 {
-    private readonly IUtensil _utensil;
-    private readonly IGameRoundsWorkClient _client;
+    private readonly GameRecordInfoOptions _gameRecordInfo;
+    private readonly IGameRecordHandleClient _client;
 
     public HandleRecordCommandService(
-        IUtensil utensil,
-        IGameRoundsWorkClient client)
+        IOptions<GameRecordInfoOptions> options,
+        IGameRecordHandleClient client)
     {
-        _utensil = utensil ?? throw new ArgumentNullException(nameof(utensil));
+        _gameRecordInfo = options.Value;
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
     public async ValueTask ExecuteAsync(HandleRecordCommand command, CancellationToken cancellationToken = default)
     {
-        var gameProviderId = await _utensil
-            .GetGameProviderIdAsync(
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        var gameProviderCode = _utensil
-            .GetGameProviderCode();
-
-        var player = await _utensil
-            .GetPlayerAsync(
-            playerCode: command.Info.PlayerCode,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        var gameId = await _utensil
-            .GetGameIdAsync(
-            gameProviderId: gameProviderId,
-            gameExternalId: command.Info.ExternalGameId,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        var gameProviderConfigurationId = await _utensil
-            .GetBrandGameProviderConfigurationIdAsync(
-            brandId: player.BrandId,
-            gameProviderId: gameProviderId,
-            cancellationToken: cancellationToken)
-            .ConfigureAwait(false);
-
-        var status = RoundStatus.Open;
-        var clientStatus = RoundClientStatus.Open;
+        var status = GameRecordStatus.Open;
+        var clientStatus = GameRecordClientStatus.Open;
         var externalCreatedOn = command.Info.ExternalCreatedOn.ToDateTimeOffset();
         var externalClosedOn = command.Info.IsClosed ? command.Info.ExternalClosedOn.ToDateTimeOffset() : (DateTimeOffset?)null;
         var bet = command.Info.Bet.ToDecimal().GetValueOrDefault(0);
@@ -60,26 +33,20 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
 
         if (command.Info.IsClosed)
         {
-            status = RoundStatus.Closed;
+            status = GameRecordStatus.Closed;
             settle = command.Info.Settle.ToDecimal().GetValueOrDefault(0);
             commission = command.Info.Commission.ToDecimal().GetValueOrDefault(0);
             turnover = command.Info.ValidBet.ToDecimal().GetValueOrDefault(0);
             winLoss = command.Info.Winloss.ToDecimal().GetValueOrDefault(0);
-            clientStatus = command.Info.IsVoid ? RoundClientStatus.Void : winLoss <= 0 ? RoundClientStatus.Loss : RoundClientStatus.Win;
+            clientStatus = command.Info.IsVoid ? GameRecordClientStatus.Void : winLoss <= 0 ? GameRecordClientStatus.Loss : GameRecordClientStatus.Win;
         }
 
         await _client
-            .RoundExchangeRateBiddingAsync(
-            gameProviderId: gameProviderId,
-            gameProviderCode: gameProviderCode,
+            .MessageAsync(
+            gameProviderCode: _gameRecordInfo.GameProviderCode,
             externalRoundId: command.Info.ExternalRoundId,
-            gameId: gameId,
             externalGameId: command.Info.ExternalGameId,
-            playerCode: player.PlayerCode,
-            walletId: player.DefaultWalletId,
-            currencyCode: player.DefaultWalletCurrencyCode,
-            brandId: player.BrandId,
-            gameProviderConfigurationId: gameProviderConfigurationId,
+            playerCode: command.Info.PlayerCode,
             status: status,
             clientStatus: clientStatus,
             externalCreatedOn: externalCreatedOn,

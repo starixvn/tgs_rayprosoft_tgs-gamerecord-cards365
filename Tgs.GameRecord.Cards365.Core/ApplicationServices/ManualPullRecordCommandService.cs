@@ -55,7 +55,7 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "LogOn:{logOn} Message: GameRecord Unsettlement Exception. GameRecord:{gameRecord}", DateTime.Now.ToString("o"), gameRecord);
+                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
                 }
             }
         }
@@ -92,7 +92,7 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "LogOn:{logOn} Message: game record exception.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
+                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
                 }
             }
         }
