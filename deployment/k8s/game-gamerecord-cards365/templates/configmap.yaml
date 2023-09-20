@@ -14,7 +14,7 @@ data:
       "GameRecord": {
         "GameCommandClientBaseUrl": "http://game-gamecommand/",
         "GameRoundsScheduleClientBaseUrl": "http://game-gamerounds-schedule:9090/",
-        "GameInterfaceClientBaseUrl": "dns:///game-gameinterface-cards365:9090/",
+        "GameInterfaceClientBaseUrl": "http:///game-gameinterface-cards365:9090/",
         "GameRecordSchedulesBaseUrl": "http://game-gamerecordschedules:9090/"
       }
     }
