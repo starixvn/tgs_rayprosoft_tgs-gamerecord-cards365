@@ -42,8 +42,7 @@ public class UtensilRepositoryUnitTest
             fakeMemoryCache);
 
         var actual = await repository
-            .GetGameProviderIdAsync()
-            .ConfigureAwait(false);
+            .GetGameProviderIdAsync();
 
         Assert.Equal(gameProviderId, actual);
 

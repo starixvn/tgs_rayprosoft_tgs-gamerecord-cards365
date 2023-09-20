@@ -1,6 +1,6 @@
 ﻿using Tgs.GameRecord.Cards365.Core;
 using Tgs.GameRounds.Schedule.Common.Protos;
-using Tgs.MessageQueue;
+using Valhalla.MessageQueue;
 
 namespace Tgs.GameRecord.Cards365.Messages;
 
