@@ -66,7 +66,7 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
             var config = _gameRecordScheduleService.GetConfig(gameRecordSchedule);
 
             var nextTime = config.NextTime;
-            var nextExternalRoundId = config.NextExternalRoundId;
+            var nextExternalWagerId = config.NextExternalWagerId;
 
             var gameWagerInfos = Enumerable.Empty<GameWagerInfo>();
             do
@@ -94,10 +94,10 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                 {
                     var last = gameWagerInfos
                         .OrderBy(x => x.UpdateTime)
-                        .ThenBy(x => x.ExternalRoundId)
+                        .ThenBy(x => x.ExternalWagerId)
                         .Select(x => new
                         {
-                            x.ExternalRoundId,
+                            x.ExternalWagerId,
                             x.UpdateTime
                         })
                         .LastOrDefault();
@@ -108,17 +108,17 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                     }
 
                     if (DateTimeOffset.Compare(nextTime, last.UpdateTime.ToDateTimeOffset()) == 0 &&
-                        nextExternalRoundId.Equals(last.ExternalRoundId, StringComparison.OrdinalIgnoreCase))
+                        nextExternalWagerId.Equals(last.ExternalWagerId, StringComparison.OrdinalIgnoreCase))
                     {
                         break;
                     }
                     else
                     {
                         nextTime = last.UpdateTime.ToDateTimeOffset();
-                        nextExternalRoundId = last.ExternalRoundId;
+                        nextExternalWagerId = last.ExternalWagerId;
                     }
 
-                    _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalRoundId:{nextExternalRoundId}", command.Extension1, nextTime.ToString("O"), nextExternalRoundId);
+                    _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalWagerId:{nextExternalWagerId}", command.Extension1, nextTime.ToString("O"), nextExternalWagerId);
 
                     foreach (var gameWagerInfo in gameWagerInfos)
                     {
@@ -145,7 +145,7 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
                     gameRecordSchedule: gameRecordSchedule,
                     extension1: command.Extension1,
                     nextTime: nextTime,
-                    nextExternalRoundId: nextExternalRoundId,
+                    nextExternalWagerId: nextExternalWagerId,
                     cancellationToken: cancellationToken)
                 .ConfigureAwait(false);
         }
