@@ -2,4 +2,4 @@
 
 namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
 
-public record HandleRecordCommand(GameRecordInfo Info);
+public record HandleRecordCommand(GameWagerInfo Info);

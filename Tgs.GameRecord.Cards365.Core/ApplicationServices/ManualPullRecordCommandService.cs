@@ -23,76 +23,74 @@ internal class ManualPullRecordCommandService : ICommandService<ManualPullRecord
 
     public async ValueTask ExecuteAsync(ManualPullRecordCommand command, CancellationToken cancellationToken = default)
     {
-        var betGameRecords = await _client
-            .GameRecordByBetTimeAsync(
-                apiUrl: command.ApiUrl,
-                website: command.Website,
-                cert: command.Cert,
-                extension1: command.Extension1,
-                startTime: command.StartTime,
-                endTime: command.EndTime,
-                cancellationToken: cancellationToken)
+        var betGameWagerInfos = await _client.GameWagerByBetTimeAsync(
+            apiUrl: command.ApiUrl,
+            website: command.Website,
+            cert: command.Cert,
+            extension1: command.Extension1,
+            startTime: command.StartTime,
+            endTime: command.EndTime,
+            cancellationToken: cancellationToken)
             .ToArrayAsync(
-                cancellationToken: cancellationToken)
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
-            ?? Enumerable.Empty<GameRecordInfo>();
+            ?? Enumerable.Empty<GameWagerInfo>();
 
-        _logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{gameRecords}", DateTime.Now.ToString("o"), betGameRecords);
+        _logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{betGameWagerInfos}", DateTime.Now.ToString("o"), betGameWagerInfos);
 
-        if (betGameRecords.Any())
+        if (betGameWagerInfos.Any())
         {
-            foreach (var gameRecord in betGameRecords)
+            foreach (var betGameWagerInfo in betGameWagerInfos)
             {
-                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameRecord);
+                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{betGameWagerInfo}", DateTime.Now.ToString("o"), betGameWagerInfo);
 
                 try
                 {
                     await _service
                         .ExecuteAsync(
-                            command: new(gameRecord),
+                            command: new(betGameWagerInfo),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
+                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({betGameWagerInfo})", DateTime.Now.ToString("o"), betGameWagerInfo);
                 }
             }
         }
 
-        var payGameRecords = await _client
-            .GameRecordByPayTimeAsync(
-                apiUrl: command.ApiUrl,
-                website: command.Website,
-                cert: command.Cert,
-                extension1: command.Extension1,
-                startTime: command.StartTime,
-                endTime: command.EndTime,
-                cancellationToken: cancellationToken)
+        var payGameWagerInfos = await _client.GameWagerByPayTimeAsync(
+            apiUrl: command.ApiUrl,
+            website: command.Website,
+            cert: command.Cert,
+            extension1: command.Extension1,
+            startTime: command.StartTime,
+            endTime: command.EndTime,
+            cancellationToken: cancellationToken)
             .ToArrayAsync(
-                cancellationToken: cancellationToken)
+            cancellationToken: cancellationToken)
             .ConfigureAwait(false)
-            ?? Enumerable.Empty<GameRecordInfo>();
+            ?? Enumerable.Empty<GameWagerInfo>();
 
-        _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameRecords}", DateTime.Now.ToString("o"), payGameRecords);
+        _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameWagerInfos}", DateTime.Now.ToString("o"), payGameWagerInfos);
 
-        if (payGameRecords.Any())
+        if (payGameWagerInfos.Any())
         {
-            foreach (var gameRecord in payGameRecords)
+            foreach (var payGameWagerInfo in payGameWagerInfos)
             {
-                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameRecord);
+                _logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameWagerInfo}", DateTime.Now.ToString("o"), payGameWagerInfo);
 
                 try
                 {
                     await _service
                         .ExecuteAsync(
-                            command: new(gameRecord),
+                            command: new(payGameWagerInfo),
                             cancellationToken: cancellationToken)
                         .ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
+                    _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({payGameWagerInfo})", DateTime.Now.ToString("o"), payGameWagerInfo);
                 }
             }
         }

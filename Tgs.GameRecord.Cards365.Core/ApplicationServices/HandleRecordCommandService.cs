@@ -51,7 +51,7 @@ internal class HandleRecordCommandService : ICommandService<HandleRecordCommand>
             cashoutState: CashoutStates.None,
             resettleState: ResettleStates.None,
             externalRoundId: command.Info.ExternalRoundId,
-            externalWagerId: command.Info.ExternalRoundId,
+            externalWagerId: command.Info.ExternalWagerId,
             externalGameId: command.Info.ExternalGameId,
             externalCreatedOn: externalCreatedOn,
             externalClosedOn: externalClosedOn,

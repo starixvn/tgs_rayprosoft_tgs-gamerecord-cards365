@@ -68,77 +68,78 @@ internal class SchedulePullRecordCommandService : ICommandService<SchedulePullRe
             var nextTime = config.NextTime;
             var nextExternalRoundId = config.NextExternalRoundId;
 
-            while (true)
+            var gameWagerInfos = Enumerable.Empty<GameWagerInfo>();
+            do
             {
                 var lastupdatedate = nextTime.ToUnixTimeMilliseconds();
+
                 if (nextTime == DateTimeOffset.UnixEpoch)
                 {
                     lastupdatedate = 0;
                 }
-                var gameRecords = await _client
-                    .GameRecordByLastUpdateAsync(
-                        apiUrl: command.ApiUrl,
-                        website: command.Website,
-                        cert: command.Cert,
-                        extension1: command.Extension1,
-                        lastupdatedate: lastupdatedate,
-                        cancellationToken: cancellationToken)
-                    .ToArrayAsync(
-                        cancellationToken: cancellationToken)
-                    .ConfigureAwait(false)
-                    ?? Enumerable.Empty<GameRecordInfo>();
 
-                if (!gameRecords.Any())
+                gameWagerInfos = await _client.GameWagerByLastUpdateAsync(
+                   apiUrl: command.ApiUrl,
+                   website: command.Website,
+                   cert: command.Cert,
+                   extension1: command.Extension1,
+                   lastupdatedate: lastupdatedate,
+                   cancellationToken: cancellationToken)
+                   .ToArrayAsync(
+                   cancellationToken: cancellationToken)
+                   .ConfigureAwait(false)
+                   ?? Enumerable.Empty<GameWagerInfo>();
+
+                if (gameWagerInfos.Any())
                 {
-                    break;
-                }
+                    var last = gameWagerInfos
+                        .OrderBy(x => x.UpdateTime)
+                        .ThenBy(x => x.ExternalRoundId)
+                        .Select(x => new
+                        {
+                            x.ExternalRoundId,
+                            x.UpdateTime
+                        })
+                        .LastOrDefault();
 
-                var last = gameRecords
-                    .OrderBy(x => x.UpdateTime)
-                    .ThenBy(x => x.ExternalRoundId)
-                    .Select(x => new
+                    if (last is null)
                     {
-                        x.ExternalRoundId,
-                        x.UpdateTime
-                    })
-                    .LastOrDefault();
-
-                if (last == null)
-                {
-                    break;
-                }
-
-                if (DateTimeOffset.Compare(nextTime, last.UpdateTime.ToDateTimeOffset()) == 0 &&
-                    nextExternalRoundId.Equals(last.ExternalRoundId, StringComparison.OrdinalIgnoreCase))
-                {
-                    break;
-                }
-                else
-                {
-                    nextTime = last.UpdateTime.ToDateTimeOffset();
-                    nextExternalRoundId = last.ExternalRoundId;
-                }
-
-                _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalRoundId:{nextExternalRoundId}", command.Extension1, nextTime.ToString("O"), nextExternalRoundId);
-
-                foreach (var gameRecord in gameRecords)
-                {
-                    _logger.LogDebug("LogOn:{logOn} Message: Settlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameRecord);
-
-                    try
-                    {
-                        await _service
-                            .ExecuteAsync(
-                                command: new(gameRecord),
-                                cancellationToken: cancellationToken)
-                            .ConfigureAwait(false);
+                        break;
                     }
-                    catch (Exception ex)
+
+                    if (DateTimeOffset.Compare(nextTime, last.UpdateTime.ToDateTimeOffset()) == 0 &&
+                        nextExternalRoundId.Equals(last.ExternalRoundId, StringComparison.OrdinalIgnoreCase))
                     {
-                        _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameRecord})", DateTime.Now.ToString("o"), gameRecord);
+                        break;
+                    }
+                    else
+                    {
+                        nextTime = last.UpdateTime.ToDateTimeOffset();
+                        nextExternalRoundId = last.ExternalRoundId;
+                    }
+
+                    _logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalRoundId:{nextExternalRoundId}", command.Extension1, nextTime.ToString("O"), nextExternalRoundId);
+
+                    foreach (var gameWagerInfo in gameWagerInfos)
+                    {
+                        _logger.LogDebug("LogOn:{logOn} Message: Settlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameWagerInfo);
+
+                        try
+                        {
+                            await _service
+                                .ExecuteAsync(
+                                    command: new(gameWagerInfo),
+                                    cancellationToken: cancellationToken)
+                                .ConfigureAwait(false);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameWagerInfo})", DateTime.Now.ToString("o"), gameWagerInfo);
+                        }
                     }
                 }
-            }
+            } while (gameWagerInfos.Any());
+
             _ = await _gameRecordScheduleService
                 .UpdateAsync(
                     gameRecordSchedule: gameRecordSchedule,
