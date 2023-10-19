@@ -91,7 +91,7 @@ internal class JobInitCommandService : ICommandService<JobInitCommand>
                     ?? settingConfigurationJson["Extension1"]?.ToString()
                     ?? throw new Exception($"Required parameters(Extension1)");
 
-                if (gameProviderAgentMapper.ContainsKey(gameProviderConfig.Name))
+                if (gameProviderAgentMapper.ContainsKey(extension1))
                 {
                     continue;
                 }
@@ -106,8 +106,10 @@ internal class JobInitCommandService : ICommandService<JobInitCommand>
 
                 gameProviderAgentMapper.Add(extension1, jobExecuteCommand);
 
+                var recurringJobId = $"{gameProviderConfig.Name}|{gameProviderConfig.GameProviderConfigId}";
+
                 RecurringJob.AddOrUpdate<IHangfireUtensil>(
-                    recurringJobId: gameProviderConfig.Name,
+                    recurringJobId: recurringJobId,
                     methodCall: service => service.JobExecuteAsync(jobExecuteCommand),
                     cronExpression: Cron.Minutely(),
                     options: _recurringJobOptions);
