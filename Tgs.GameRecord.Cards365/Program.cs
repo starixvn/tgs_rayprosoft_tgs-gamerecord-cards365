@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Tgs.GameRecord.Awc.Messages;
 using Tgs.GameRecord.Cards365;
 using Tgs.GameRecord.Cards365.Common;
 using Tgs.GameRecord.Cards365.Core;
+using Tgs.GameRecord.Cards365.Messages;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
 

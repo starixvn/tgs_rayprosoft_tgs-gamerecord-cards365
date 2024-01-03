@@ -9,7 +9,7 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Tgs.GameRecord.Jili.Messages": "Information"
+          "Tgs.GameRecord.Cards365.Messages": "Information"
         }
       },
       "GameRecord": {

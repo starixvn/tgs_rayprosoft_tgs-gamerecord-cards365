@@ -5,7 +5,7 @@ using Tgs.GameRecord.Cards365.Core.ApplicationServices;
 using Tgs.ServiceUtility;
 using Valhalla.MessageQueue;
 
-namespace Tgs.GameRecord.Awc.Messages;
+namespace Tgs.GameRecord.Cards365.Messages;
 
 internal class GameRecordScheduleMessageHandler(
     ILogger<GameRecordScheduleMessageHandler> logger,
