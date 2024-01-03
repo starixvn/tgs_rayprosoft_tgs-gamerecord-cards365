@@ -1,45 +1,31 @@
-﻿using Microsoft.Extensions.Logging;
-using Tgs.GameRounds.Schedule.Client;
+﻿using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Tgs.GameRecord.Cards365.Common;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace Tgs.GameRecord.Cards365.Core.JobApplicationServices;
 
-internal class JobExecuteCommandService : ICommandService<JobExecuteCommand>
+internal class JobExecuteCommandService(
+    ILogger<JobExecuteCommandService> logger,
+    IMessageSender messageSender) : ICommandService<JobExecuteCommand>
 {
-    private readonly IGameRoundsScheduleClient _client;
-    private readonly ILogger<JobExecuteCommandService> _logger;
-
-    public JobExecuteCommandService(
-        ILogger<JobExecuteCommandService> logger,
-        IGameRoundsScheduleClient client)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-    }
-
     public ValueTask ExecuteAsync(JobExecuteCommand command, CancellationToken cancellationToken = default)
     {
-        var parameters = new
+        var parameters = new Cards365GameRecordScheduleMessage
         {
-            command.GameProviderCode,
-            command.Name,
-            command.ApiUrl,
-            command.Website,
-            command.Cert,
-            command.Extension1
+            ApiUrl = command.ApiUrl,
+            Website = command.Website,
+            Cert = command.Cert,
+            Extension1 = command.Extension1
         };
 
-        _logger.LogDebug("LogOn:{logOn} Parameters:{parameters}", DateTime.Now.ToString("u"), parameters);
+        logger.LogInformation("LogOn:{logOn} Parameters:{parameters}", DateTime.Now.ToString("u"), parameters);
 
-        return _client
-            .Cards365_ScheduleFormQueuedAsync(
-            gameProviderCode: command.GameProviderCode,
-            name: command.Name,
-            subject: "gp.gamerecord.scheduleform.365tf.queued",
-            apiUrl: parameters.ApiUrl,
-            website: parameters.Website,
-            cert: parameters.Cert,
-            extension1: parameters.Extension1,
+        return messageSender.PublishAsync(
+            subject: Cards365NatsConst.SchedulePublish,
+            data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(parameters)),
             cancellationToken: cancellationToken);
     }
 }

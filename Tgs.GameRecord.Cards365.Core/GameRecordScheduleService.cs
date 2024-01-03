@@ -5,18 +5,11 @@ using Tgs.GameRecordSchedules.Protos;
 
 namespace Tgs.GameRecord.Cards365.Core;
 
-internal class GameRecordScheduleService : IGameRecordScheduleService
+internal class GameRecordScheduleService(
+    IGameRecordSchedulesClient client,
+    IOptions<GameRecordInfoOptions> options) : IGameRecordScheduleService
 {
-    private readonly IGameRecordSchedulesClient _client;
-    private readonly GameRecordInfoOptions _gameRecordInfo;
-
-    public GameRecordScheduleService(
-        IGameRecordSchedulesClient client,
-        IOptions<GameRecordInfoOptions> options)
-    {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _gameRecordInfo = options.Value;
-    }
+    private readonly GameRecordInfoOptions _gameRecordInfo = options.Value;
 
     public ValueTask<GameRecordScheduleReply?> GetAsync(
         string extension1,
@@ -30,7 +23,7 @@ internal class GameRecordScheduleService : IGameRecordScheduleService
             CurrencyCode = string.Empty
         };
 
-        return _client.GameRecordScheduleGetAsync(request, cancellationToken);
+        return client.GameRecordScheduleGetAsync(request, cancellationToken);
     }
 
     public ScheduleConfig GetConfig(GameRecordScheduleReply gameRecordSchedule)
@@ -59,7 +52,7 @@ internal class GameRecordScheduleService : IGameRecordScheduleService
             Config = JsonSerializer.Serialize(config)
         };
 
-        _ = await _client.GameRecordScheduleAddAsync(addRequest, cancellationToken).ConfigureAwait(false);
+        _ = await client.GameRecordScheduleAddAsync(addRequest, cancellationToken).ConfigureAwait(false);
 
         return await GetAsync(extension1, cancellationToken).ConfigureAwait(false);
     }
@@ -84,7 +77,7 @@ internal class GameRecordScheduleService : IGameRecordScheduleService
             Config = JsonSerializer.Serialize(config)
         };
 
-        var updateResult = await _client
+        var updateResult = await client
             .GameRecordScheduleUpdateAsync(request, cancellationToken).ConfigureAwait(false);
 
         return updateResult.Success

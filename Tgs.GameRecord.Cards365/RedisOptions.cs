@@ -1,4 +1,4 @@
-﻿namespace Tgs.GameRecord.Cards365.Core;
+﻿namespace Tgs.GameRecord.Cards365;
 
 public record RedisOptions
 {

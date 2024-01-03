@@ -5,21 +5,14 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
 
-internal class ManualPullRecordCommandService : ICommandService<ManualPullRecordCommand>
+internal class ManualPullRecordCommandService(
+    ILogger<ManualPullRecordCommandService> logger,
+    IGameInterfaceCards365Client client,
+    ICommandService<HandleRecordCommand> service) : ICommandService<ManualPullRecordCommand>
 {
-    private readonly IGameInterfaceCards365Client _client;
-    private readonly ILogger<ManualPullRecordCommandService> _logger;
-    private readonly ICommandService<HandleRecordCommand> _service;
-
-    public ManualPullRecordCommandService(
-        ILogger<ManualPullRecordCommandService> logger,
-        IGameInterfaceCards365Client client,
-        ICommandService<HandleRecordCommand> service)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _service = service ?? throw new ArgumentNullException(nameof(service));
-    }
+    private readonly IGameInterfaceCards365Client _client = client ?? throw new ArgumentNullException(nameof(client));
+    private readonly ILogger<ManualPullRecordCommandService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ICommandService<HandleRecordCommand> _service = service ?? throw new ArgumentNullException(nameof(service));
 
     public async ValueTask ExecuteAsync(ManualPullRecordCommand command, CancellationToken cancellationToken = default)
     {

@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
+using StackExchange.Redis;
 using Tgs.GameCommand.Client;
 using Tgs.GameInterface.Cards365.Client;
 using Tgs.GameRecord.Cards365.Core;
 using Tgs.GameRecordSchedules.Client;
-using Tgs.GameRounds.Schedule.Client;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -11,33 +11,22 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddGameRecordCore(
         this IServiceCollection services,
-        Action<RedisOptions, IServiceProvider> redisDBconfigure,
-        Action<GameRecordInfoOptions, IServiceProvider> gameRecordInfoOptions,
         Action<GameCommandClientOptions, IServiceProvider> gameCommandClientOptions,
-        Action<GameRoundsScheduleClientOptions, IServiceProvider> gameRoundsScheduleClientOptions,
         Action<GameInterfaceCards365ClientOptions, IServiceProvider> gameInterfaceCards365ClientOptions,
-        Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions)
+        Action<GameRecordSchedulesClientOptions, IServiceProvider> gameRecordSchedulesClientOptions,
+        Func<IServiceProvider, IDatabase> redisDatabaseResolver)
         => services
-        .AddOptions<RedisOptions>()
-        .Configure(redisDBconfigure)
-        .Services
-        .AddOptions<GameRecordInfoOptions>()
-        .Configure(gameRecordInfoOptions)
-        .Services
         .RegisterAllServiceUtilityTypes(
             Assembly.GetExecutingAssembly(),
             ServiceLifetime.Transient)
         .AddMemoryCache()
-        .AddSingleton<RedisConnectionManager>()
         .AddGameCommandClient(gameCommandClientOptions)
-        .AddGameRoundsScheduleClient(gameRoundsScheduleClientOptions)
         .AddGameInterfaceCards365Client(gameInterfaceCards365ClientOptions)
         .AddGameRecordSchedulesClient(gameRecordSchedulesClientOptions)
         .AddGameRecordHandleClient()
         .AddTransient<IHangfireUtensil, HangfireUtensil>()
-        .AddSingleton<IScheduleFormDispatcher, ScheduleFormDispatcher>()
-        .AddSingleton<IScheduleFormLock>(sp => ActivatorUtilities.CreateInstance<ScheduleFormLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
-        .AddSingleton<ISchedulePullRecordLock>(sp => ActivatorUtilities.CreateInstance<SchedulePullRecordLock>(sp, sp.GetRequiredService<RedisConnectionManager>().Database))
+         .AddTransient<IHangfireLock>(sp => ActivatorUtilities.CreateInstance<HangfireLock>(sp, redisDatabaseResolver(sp)))
+        .AddSingleton<ISchedulePullRecordLock>(sp => ActivatorUtilities.CreateInstance<SchedulePullRecordLock>(sp, redisDatabaseResolver(sp)))
         .AddSingleton<IUtensil, UtensilRepository>()
         .AddSingleton<ISystemClock, SystemClock>()
         .AddTransient<IGameRecordScheduleService, GameRecordScheduleService>();
