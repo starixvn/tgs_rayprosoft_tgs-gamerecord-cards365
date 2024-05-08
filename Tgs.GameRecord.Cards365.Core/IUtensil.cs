@@ -2,6 +2,6 @@
 
 public interface IUtensil
 {
-    ValueTask<Guid> GetGameProviderIdAsync(
-        CancellationToken cancellationToken = default);
+	ValueTask<Guid> GetGameProviderIdAsync(
+		CancellationToken cancellationToken = default);
 }

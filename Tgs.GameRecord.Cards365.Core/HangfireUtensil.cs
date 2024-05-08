@@ -3,29 +3,17 @@ using Tgs.ServiceUtility;
 
 namespace Tgs.GameRecord.Cards365.Core;
 
-internal class HangfireUtensil : IHangfireUtensil
+internal class HangfireUtensil(
+	ICommandService<JobCheckCommand> jobCheckService,
+	ICommandService<JobExecuteCommand> jobExecuteService,
+	ICommandService<JobInitCommand> jobInitservice) : IHangfireUtensil
 {
-    private readonly ICommandService<JobCheckCommand> _jobCheckService;
-    private readonly ICommandService<JobExecuteCommand> _jobExecuteService;
-    private readonly ICommandService<JobInitCommand> _jobInitservice;
+	public Task JobCheckAsync()
+		=> jobCheckService.ExecuteAsync(new()).AsTask();
 
-    public HangfireUtensil(
-        ICommandService<JobCheckCommand> jobCheckService,
-        ICommandService<JobExecuteCommand> jobExecuteService,
-        ICommandService<JobInitCommand> jobInitservice
-        )
-    {
-        _jobCheckService = jobCheckService ?? throw new ArgumentNullException(nameof(jobCheckService));
-        _jobExecuteService = jobExecuteService ?? throw new ArgumentNullException(nameof(jobExecuteService));
-        _jobInitservice = jobInitservice ?? throw new ArgumentNullException(nameof(jobInitservice));
-    }
+	public Task JobExecuteAsync(JobExecuteCommand source)
+		=> jobExecuteService.ExecuteAsync(source).AsTask();
 
-    public Task JobCheckAsync()
-        => _jobCheckService.ExecuteAsync(new()).AsTask();
-
-    public Task JobExecuteAsync(JobExecuteCommand source)
-        => _jobExecuteService.ExecuteAsync(source).AsTask();
-
-    public Task JobInitAsync()
-        => _jobInitservice.ExecuteAsync(new()).AsTask();
+	public Task JobInitAsync()
+		=> jobInitservice.ExecuteAsync(new()).AsTask();
 }

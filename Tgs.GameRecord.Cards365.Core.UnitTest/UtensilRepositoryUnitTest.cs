@@ -10,46 +10,46 @@ namespace Tgs.GameRecord.Cards365.Core.UnitTest;
 
 public class UtensilRepositoryUnitTest
 {
-    [Fact]
-    public async Task Get_GameProvider_Id()
-    {
-        var gameRecordInfo = Options.Create(new GameRecordInfoOptions
-        {
-            GameProviderCode = "365TF",
-            LockMinute = 10
-        });
-        var fakeClient = Substitute.For<IGameCommandClient>();
-        var fakeMemoryCache = Substitute.For<IMemoryCache>();
+	[Fact]
+	public async Task Get_GameProvider_Id()
+	{
+		var gameRecordInfo = Options.Create(new GameRecordInfoOptions
+		{
+			GameProviderCode = "365TF",
+			LockMinute = 10
+		});
+		var fakeClient = Substitute.For<IGameCommandClient>();
+		var fakeMemoryCache = Substitute.For<IMemoryCache>();
 
-        var key = $"gamerecord:{gameRecordInfo.Value.GameProviderCode}";
+		var key = $"gamerecord:{gameRecordInfo.Value.GameProviderCode}";
 
-        _ = fakeMemoryCache
-            .TryGetValue(
-                key: Arg.Is(key),
-                value: out _)
-             .Returns(false);
+		_ = fakeMemoryCache
+			.TryGetValue(
+				key: Arg.Is(key),
+				value: out _)
+			 .Returns(false);
 
-        var gameProviderId = Guid.NewGuid();
-        _ = fakeClient
-            .GameProviderGetGameProviderIdAsync(
-                gameProviderCode: Arg.Is(gameRecordInfo.Value.GameProviderCode),
-                cancellationToken: Arg.Any<CancellationToken>())
-            .Returns(gameProviderId);
+		var gameProviderId = Guid.NewGuid();
+		_ = fakeClient
+			.GameProviderGetGameProviderIdAsync(
+				gameProviderCode: Arg.Is(gameRecordInfo.Value.GameProviderCode),
+				cancellationToken: Arg.Any<CancellationToken>())
+			.Returns(gameProviderId);
 
-        var repository = new UtensilRepository(
-            gameRecordInfo,
-            fakeClient,
-            fakeMemoryCache);
+		var repository = new UtensilRepository(
+			gameRecordInfo,
+			fakeClient,
+			fakeMemoryCache);
 
-        var actual = await repository
-            .GetGameProviderIdAsync();
+		var actual = await repository
+			.GetGameProviderIdAsync();
 
-        Assert.Equal(gameProviderId, actual);
+		Assert.Equal(gameProviderId, actual);
 
-        _ = fakeMemoryCache
-            .Received(1)
-            .Set(
-                key: key,
-                gameProviderId);
-    }
+		_ = fakeMemoryCache
+			.Received(1)
+			.Set(
+				key: key,
+				gameProviderId);
+	}
 }

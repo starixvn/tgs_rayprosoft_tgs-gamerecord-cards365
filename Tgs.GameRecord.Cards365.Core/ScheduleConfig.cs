@@ -2,6 +2,6 @@
 
 public record ScheduleConfig
 {
-    public DateTimeOffset NextTime { get; set; }
-    public string NextExternalWagerId { get; set; } = default!;
+	public DateTimeOffset NextTime { get; set; }
+	public string NextExternalWagerId { get; set; } = default!;
 }

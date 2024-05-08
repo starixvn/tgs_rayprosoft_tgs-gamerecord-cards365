@@ -4,21 +4,21 @@ namespace Tgs.GameRecord.Cards365.Core;
 
 public interface IGameRecordScheduleService
 {
-    ValueTask<GameRecordScheduleReply?> GetAsync(
-       string extension1,
-       CancellationToken cancellationToken = default);
+	ValueTask<GameRecordScheduleReply?> GetAsync(
+	   string extension1,
+	   CancellationToken cancellationToken = default);
 
-    ScheduleConfig GetConfig(GameRecordScheduleReply gameRecordSchedule);
+	ScheduleConfig GetConfig(GameRecordScheduleReply gameRecordSchedule);
 
-    ValueTask<GameRecordScheduleReply?> InitAsync(
-      Guid gameProviderId,
-      string extension1,
-      CancellationToken cancellationToken = default);
+	ValueTask<GameRecordScheduleReply?> InitAsync(
+	  Guid gameProviderId,
+	  string extension1,
+	  CancellationToken cancellationToken = default);
 
-    ValueTask<GameRecordScheduleReply?> UpdateAsync(
-      GameRecordScheduleReply gameRecordSchedule,
-      string extension1,
-      DateTimeOffset nextTime,
-      string nextExternalWagerId,
-      CancellationToken cancellationToken = default);
+	ValueTask<GameRecordScheduleReply?> UpdateAsync(
+	  GameRecordScheduleReply gameRecordSchedule,
+	  string extension1,
+	  DateTimeOffset nextTime,
+	  string nextExternalWagerId,
+	  CancellationToken cancellationToken = default);
 }

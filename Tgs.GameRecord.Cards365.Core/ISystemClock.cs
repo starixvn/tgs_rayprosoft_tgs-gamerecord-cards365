@@ -2,5 +2,5 @@
 
 public interface ISystemClock
 {
-    DateTimeOffset CurrentTime { get; }
+	DateTimeOffset CurrentTime { get; }
 }

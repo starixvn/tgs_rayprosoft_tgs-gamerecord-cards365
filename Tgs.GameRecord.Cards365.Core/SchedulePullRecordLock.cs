@@ -3,22 +3,15 @@ using StackExchange.Redis;
 
 namespace Tgs.GameRecord.Cards365.Core;
 
-internal class SchedulePullRecordLock : ISchedulePullRecordLock
+internal class SchedulePullRecordLock(
+	IOptions<GameRecordInfoOptions> options,
+	IDatabase database) : ISchedulePullRecordLock
 {
-    private readonly IDatabase _database;
-    private readonly GameRecordInfoOptions _gameRecordInfo;
+	private readonly GameRecordInfoOptions _gameRecordInfo = options.Value;
 
-    public SchedulePullRecordLock(
-        IOptions<GameRecordInfoOptions> options,
-        IDatabase database)
-    {
-        _gameRecordInfo = options.Value;
-        _database = database ?? throw new ArgumentNullException(nameof(database));
-    }
+	public Task<bool> LockingAsync(string agentName)
+		=> database.StringSetAsync(key: $"{_gameRecordInfo.GameProviderCode.ToLower()}:schedulepullrecord:{agentName}", value: agentName, expiry: TimeSpan.FromMinutes(_gameRecordInfo.LockMinute), when: When.NotExists);
 
-    public Task<bool> LockingAsync(string agentName)
-        => _database.StringSetAsync(key: $"{_gameRecordInfo.GameProviderCode.ToLower()}:schedulepullrecord:{agentName}", value: agentName, expiry: TimeSpan.FromMinutes(_gameRecordInfo.LockMinute), when: When.NotExists);
-
-    public Task<bool> UnlockAsync(string agentName)
-        => _database.KeyDeleteAsync(key: $"{_gameRecordInfo.GameProviderCode.ToLower()}:schedulepullrecord:{agentName}");
+	public Task<bool> UnlockAsync(string agentName)
+		=> database.KeyDeleteAsync(key: $"{_gameRecordInfo.GameProviderCode.ToLower()}:schedulepullrecord:{agentName}");
 }
