@@ -20,6 +20,9 @@ public class HandleRecordCommandServiceUnitTest
 		var gameRecordInfo = Options.Create(new GameRecordInfoOptions
 		{
 			GameProviderCode = "365TF",
+			GameProviderConfiguration = "365TFConfiguration",
+			HangfirePrefix = "gamerecord-cards365-hangfire:",
+			HangfireLocking = "gamerecord-cards365-locking:",
 			LockMinute = 10
 		});
 		var fakeMessageSender = Substitute.For<IMessageSender>();
@@ -92,6 +95,9 @@ public class HandleRecordCommandServiceUnitTest
 		var gameRecordInfo = Options.Create(new GameRecordInfoOptions
 		{
 			GameProviderCode = "365TF",
+			GameProviderConfiguration = "365TFConfiguration",
+			HangfirePrefix = "gamerecord-cards365-hangfire:",
+			HangfireLocking = "gamerecord-cards365-locking:",
 			LockMinute = 10
 		});
 		var fakeMessageSender = Substitute.For<IMessageSender>();
@@ -164,6 +170,9 @@ public class HandleRecordCommandServiceUnitTest
 		var gameRecordInfo = Options.Create(new GameRecordInfoOptions
 		{
 			GameProviderCode = "365TF",
+			GameProviderConfiguration = "365TFConfiguration",
+			HangfirePrefix = "gamerecord-cards365-hangfire:",
+			HangfireLocking = "gamerecord-cards365-locking:",
 			LockMinute = 10
 		});
 		var fakeMessageSender = Substitute.For<IMessageSender>();
