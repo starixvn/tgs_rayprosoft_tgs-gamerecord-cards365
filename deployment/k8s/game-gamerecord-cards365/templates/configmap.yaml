@@ -9,8 +9,10 @@ data:
       "Logging": {
         "LogLevel": {
           "Default": "Warning",
-          "Tgs.GameRecord.Cards365.Messages": "Information",
-          "Tgs.GameRecord.Cards365.Core.ApplicationServices.HandleRecordCommandService": "Information"
+          "Grpc.Net.Client.Balancer": "Debug",
+          "Tgs.GameRecord.Cards365.Messages.ManualMessageHandler": "Information",
+          "Tgs.GameRecord.Cards365.Messages.ScheduleMessageHandler": "Warning",
+          "Tgs.GameRecord.Cards365.Core.ApplicationServices.HandleRecordCommandService": "Warning"
         }
       },
       "GameRecord": {
