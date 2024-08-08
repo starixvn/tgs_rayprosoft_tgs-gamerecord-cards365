@@ -2,7 +2,7 @@
 
 namespace Tgs.GameRecord.Cards365.Core;
 
-public interface IHangfireUtensil
+public interface IHangfireUtensilRepository
 {
 	public Task JobCheckAsync();
 

@@ -13,7 +13,8 @@ COPY ["nuget.config", "."]
 COPY ["Tgs.GameRecord.Cards365/Tgs.GameRecord.Cards365.csproj", "Tgs.GameRecord.Cards365/"]
 COPY ["Tgs.GameRecord.Cards365.Common/Tgs.GameRecord.Cards365.Common.csproj", "Tgs.GameRecord.Cards365.Common/"]
 COPY ["Tgs.GameRecord.Cards365.Core/Tgs.GameRecord.Cards365.Core.csproj", "Tgs.GameRecord.Cards365.Core/"]
-RUN dotnet restore "./Tgs.GameRecord.Cards365/./Tgs.GameRecord.Cards365.csproj"
+COPY ["Tgs.GameRecord.Cards365.Repositories/Tgs.GameRecord.Cards365.Repositories.csproj", "Tgs.GameRecord.Cards365.Repositories/"]
+RUN dotnet restore "./Tgs.GameRecord.Cards365/Tgs.GameRecord.Cards365.csproj"
 COPY . .
 WORKDIR "/src/Tgs.GameRecord.Cards365"
 RUN dotnet build "./Tgs.GameRecord.Cards365.csproj" -c $BUILD_CONFIGURATION -o /app/build
