@@ -14,7 +14,7 @@ internal class SchedulePullRecordChannel(
 	IServiceProvider serviceProvider,
 	string key) : IDisposable, IAsyncDisposable
 {
-	private static readonly ActivitySource _ActivitySource = new(name: typeof(SchedulePullRecordChannel).FullName!);
+	private static readonly ActivitySource _ActivitySource = new(name: typeof(SchedulePullRecordCommand).FullName!);
 
 	private readonly Channel<SchedulePullRecordCommand> _channel = Channel.CreateUnbounded<SchedulePullRecordCommand>(
 		new()
@@ -120,7 +120,7 @@ internal class SchedulePullRecordChannel(
 			if (reader.TryRead(out var command))
 			{
 				using var activity = _ActivitySource.StartActivity(
-					"GameWagersEventSourceChannel handle exchange",
+					"SchedulePullRecordChannel handle exchange",
 					 ActivityKind.Internal,
 					parentContext: default);
 				try
