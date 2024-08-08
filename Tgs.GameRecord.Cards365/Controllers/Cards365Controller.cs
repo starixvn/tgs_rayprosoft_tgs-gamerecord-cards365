@@ -2,9 +2,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameRecord.Cards365.Common;
-using Tgs.GameRecord.Cards365.Core.ApplicationServices;
-using Tgs.GameRecord.Cards365.Models;
-using Tgs.ServiceUtility;
 using Valhalla.MessageQueue;
 
 namespace Tgs.GameRecord.Cards365.Controllers;
