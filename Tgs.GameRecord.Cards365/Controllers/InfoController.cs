@@ -2,33 +2,35 @@
 using System.Net.Sockets;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Tgs.GameRecord.Cards365.Core;
 
 namespace Tgs.GameRecord.Cards365.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class InfoController(IConfiguration configuration) : ControllerBase
+public class InfoController() : ControllerBase
 {
 	[HttpGet]
-	public async Task<object> GetAsync([FromServices] IWebHostEnvironment _hostingEnvironment)
+	public async Task<object> GetAsync(
+		[FromServices] IWebHostEnvironment webHostEnvironment,
+		[FromServices] IOptions<GameRecordInfoOptions> options)
 	{
 		var hostName = Dns.GetHostName();
 		var hostEntry = await Dns.GetHostEntryAsync(hostName).ConfigureAwait(false);
 		var hostIp = Array.Find(hostEntry.AddressList,
 			x => x.AddressFamily == AddressFamily.InterNetwork);
-		var gameRecordInfo = configuration.GetSection("GameRecordInfo").Get<GameRecordInfoOptions>();
 
 		return new
 		{
 			Environment.MachineName,
 			HostName = hostName,
 			HostIp = hostIp?.ToString() ?? string.Empty,
-			Environment = _hostingEnvironment.EnvironmentName,
+			Environment = webHostEnvironment.EnvironmentName,
 			OsVersion = $"{Environment.OSVersion}",
 			Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
 			ProcessCount = Environment.ProcessorCount,
-			gameRecordInfo,
+			GameRecordInfoOptions = options.Value,
 		};
 	}
 }

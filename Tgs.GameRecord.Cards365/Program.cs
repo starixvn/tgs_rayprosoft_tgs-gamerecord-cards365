@@ -11,6 +11,7 @@ using Tgs.GameRecord.Cards365;
 using Tgs.GameRecord.Cards365.Common;
 using Tgs.GameRecord.Cards365.Core;
 using Tgs.GameRecord.Cards365.Messages;
+using Tgs.GameRecord.Cards365.Repositories;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var filterInstrumentations = new[] { "html", "ico", "png", "jpg" };
@@ -68,32 +69,48 @@ builder.Services.AddHangfire(
 	})
 	.AddHangfireServer();
 
-builder.Services.AddGameRecord(
-	(options, sp) =>
+builder.Services
+	.AddOptions<RedisOptions>()
+	.Configure((RedisOptions options, IServiceProvider sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.ConnectionString = configuration.GetConnectionString("Redis")!;
-	},
-	(options, sp) =>
+	})
+	.Services
+	.AddOptions<MongoDBOptions>()
+	.Configure((MongoDBOptions options, IServiceProvider sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		options.ConnectionString = configuration.GetConnectionString("Mongo")!;
+	})
+	.Services
+	.AddOptions<GameRecordInfoOptions>()
+	.Configure((GameRecordInfoOptions options, IServiceProvider sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		configuration.GetSection("GameRecordInfo").Bind(options);
-	},
-	(options, sp) =>
+	})
+	.Services
+	.AddMemoryCache()
+	.AddSingleton<RedisConnectionManager>()
+	.AddSingleton<MongoDBConnectionManager>()
+	.AddGameCommandClient((options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameCommandClientBaseUrl")!;
-	},
-	(options, sp) =>
+	})
+	.AddGameInterfaceCards365Client((options, sp) =>
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameInterfaceClientBaseUrl")!;
-	},
-	(options, sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameRecordSchedulesBaseUrl")!;
-	});
+	})
+	.AddGameRecordCore()
+	.AddGameRecordRepositories(
+	mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient,
+	redisDatabaseResolver: (sp) => sp.GetRequiredService<RedisConnectionManager>().Database);
+
+//GameRecordSchedule Init Startup
+builder.Services.AddHostedService<GameRecordScheduleInitStartup>();
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
@@ -151,10 +168,10 @@ app.UseHangfireDashboard(
 	"/hangfire",
 	new DashboardOptions()
 	{
-		Authorization = new[]
-		{
+		Authorization =
+		[
 			new IgnoreHangfireAuthorizationFilter()
-		}
+		]
 	});
 
 _ = app.UseAuthorization();
@@ -164,7 +181,5 @@ _ = app.MapControllers();
 app.MapHealthChecks("/healthz");
 
 _ = app.UseHangfireRegisterAsync();
-
-_ = app.UseRegister();
 
 app.Run();

@@ -1,5 +1,3 @@
-﻿using Tgs.GameInterface.Cards365.Protos;
+﻿namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
 
-namespace Tgs.GameRecord.Cards365.Core.ApplicationServices;
-
-public record HandleRecordCommand(GameWagerInfo Info);
+public record HandleRecordCommand(GameInterface.Cards365.Protos.GameWagerInfo Info);

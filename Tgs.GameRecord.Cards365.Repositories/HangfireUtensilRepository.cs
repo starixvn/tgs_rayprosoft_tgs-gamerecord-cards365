@@ -1,12 +1,14 @@
-﻿using Tgs.GameRecord.Cards365.Core.JobApplicationServices;
+﻿using Tgs.GameRecord.Cards365.Core;
+
+using Tgs.GameRecord.Cards365.Core.JobApplicationServices;
 using Tgs.ServiceUtility;
 
-namespace Tgs.GameRecord.Cards365.Core;
+namespace Tgs.GameRecord.Cards365.Repositories;
 
-internal class HangfireUtensil(
+internal class HangfireUtensilRepository(
 	ICommandService<JobCheckCommand> jobCheckService,
 	ICommandService<JobExecuteCommand> jobExecuteService,
-	ICommandService<JobInitCommand> jobInitservice) : IHangfireUtensil
+	ICommandService<JobInitCommand> jobInitservice) : IHangfireUtensilRepository
 {
 	public Task JobCheckAsync()
 		=> jobCheckService.ExecuteAsync(new()).AsTask();
