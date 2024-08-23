@@ -18,8 +18,8 @@ public class Cards365Controller : ControllerBase
 	/// <returns></returns>
 	[HttpPost("manual")]
 	public ValueTask GameRecordAsync(
-	   [FromServices] IMessageSender messageSender,
-	   [FromBody] Cards365GameRecordManualMessage source)
+		[FromServices] IMessageSender messageSender,
+		[FromBody] Cards365GameRecordManualMessage source)
 		=> messageSender.PublishAsync(
 			subject: Cards365NatsConst.ManualPublish,
 			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(source)),

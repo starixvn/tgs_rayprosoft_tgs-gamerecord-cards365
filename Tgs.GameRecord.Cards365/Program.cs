@@ -44,13 +44,7 @@ builder.Services
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-	foreach (var xmlFileName in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.xml"))
-	{
-		c.IncludeXmlComments(xmlFileName);
-	}
-});
+builder.Services.AddSwaggerGen();
 
 // Learn more about configuring Hangfire
 builder.Services.AddHangfire(
@@ -89,6 +83,13 @@ builder.Services
 	{
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		configuration.GetSection("GameRecordInfo").Bind(options);
+	})
+	.Services
+	.AddOptions<PolicySettingsOptions>()
+	.Configure((PolicySettingsOptions options, IServiceProvider sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		configuration.GetSection("PolicySettings").Bind(options);
 	})
 	.Services
 	.AddMemoryCache()
