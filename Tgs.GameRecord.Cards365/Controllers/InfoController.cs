@@ -9,12 +9,13 @@ namespace Tgs.GameRecord.Cards365.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class InfoController() : ControllerBase
+public class InfoController : ControllerBase
 {
 	[HttpGet]
 	public async Task<object> GetAsync(
 		[FromServices] IWebHostEnvironment webHostEnvironment,
-		[FromServices] IOptions<GameRecordInfoOptions> options)
+		[FromServices] IOptions<GameRecordInfoOptions> gameRecordInfoOptions,
+		[FromServices] IOptions<PolicySettingsOptions> policySettingsOptions)
 	{
 		var hostName = Dns.GetHostName();
 		var hostEntry = await Dns.GetHostEntryAsync(hostName).ConfigureAwait(false);
@@ -30,7 +31,8 @@ public class InfoController() : ControllerBase
 			OsVersion = $"{Environment.OSVersion}",
 			Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
 			ProcessCount = Environment.ProcessorCount,
-			GameRecordInfoOptions = options.Value,
+			GameRecordInfoOptions = gameRecordInfoOptions.Value,
+			PolicySettingsOptions = policySettingsOptions.Value
 		};
 	}
 }

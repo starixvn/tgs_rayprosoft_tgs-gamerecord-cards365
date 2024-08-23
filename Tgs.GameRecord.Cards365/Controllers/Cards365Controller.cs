@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Tgs.GameRecord.Cards365.Common;
 using Valhalla.MessageQueue;
@@ -18,11 +17,11 @@ public class Cards365Controller : ControllerBase
 	/// <returns></returns>
 	[HttpPost("manual")]
 	public ValueTask GameRecordAsync(
-	   [FromServices] IMessageSender messageSender,
-	   [FromBody] Cards365GameRecordManualMessage source)
+		[FromServices] IMessageSender messageSender,
+		[FromBody] Cards365GameRecordManualMessage source)
 		=> messageSender.PublishAsync(
 			subject: Cards365NatsConst.ManualPublish,
-			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(source)),
+			data: JsonSerializer.SerializeToUtf8Bytes(source),
 			cancellationToken: HttpContext.RequestAborted);
 
 	/// <summary>
@@ -37,6 +36,6 @@ public class Cards365Controller : ControllerBase
 		Cards365GameRecordScheduleMessage source)
 		=> messageSender.PublishAsync(
 			subject: Cards365NatsConst.SchedulePublish,
-			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(source)),
+			data: JsonSerializer.SerializeToUtf8Bytes(source),
 			cancellationToken: HttpContext.RequestAborted);
 }
