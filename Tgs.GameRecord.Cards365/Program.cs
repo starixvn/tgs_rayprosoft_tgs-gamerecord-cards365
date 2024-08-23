@@ -105,6 +105,11 @@ builder.Services
 		var configuration = sp.GetRequiredService<IConfiguration>();
 		options.BaseUrl = configuration.GetValue<Uri>("GameRecord:GameInterfaceClientBaseUrl")!;
 	})
+	.AddGameRecordHandleClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("GameRecord:GameRecordHandleClientBaseUrl");
+	}))
 	.AddGameRecordCore()
 	.AddGameRecordRepositories(
 	mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient,

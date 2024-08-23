@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Tgs.GameRecord.Cards365.Common;
 using Tgs.ServiceUtility;
@@ -25,7 +24,7 @@ internal class JobExecuteCommandService(
 
 		return messageSender.PublishAsync(
 			subject: Cards365NatsConst.SchedulePublish,
-			data: Encoding.UTF8.GetBytes(JsonSerializer.Serialize(parameters)),
+			data: JsonSerializer.SerializeToUtf8Bytes(parameters),
 			cancellationToken: cancellationToken);
 	}
 }
