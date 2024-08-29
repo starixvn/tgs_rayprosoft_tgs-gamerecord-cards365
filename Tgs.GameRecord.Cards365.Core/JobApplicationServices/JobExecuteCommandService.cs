@@ -12,7 +12,7 @@ internal class JobExecuteCommandService(
 {
 	public ValueTask ExecuteAsync(JobExecuteCommand command, CancellationToken cancellationToken = default)
 	{
-		var parameters = new Cards365GameRecordScheduleMessage
+		var message = new Cards365GameRecordScheduleMessage
 		{
 			ApiUrl = command.ApiUrl,
 			Website = command.Website,
@@ -20,11 +20,24 @@ internal class JobExecuteCommandService(
 			Extension1 = command.Extension1
 		};
 
-		logger.LogInformation("LogOn:{logOn} Parameters:{parameters}", DateTime.Now.ToString("u"), parameters);
+		logger.LogInformation("{logInformation}",
+			JsonSerializer.Serialize(new
+			{
+				LogOn = DateTime.Now.ToString("u"),
+				Subject = Cards365NatsConst.SchedulePublish,
+				Data = new
+				{
+					message.ApiUrl,
+					message.Website,
+					message.Cert,
+					message.Extension1
+				},
+				Message = "This message publishing handler."
+			}));
 
 		return messageSender.PublishAsync(
 			subject: Cards365NatsConst.SchedulePublish,
-			data: JsonSerializer.SerializeToUtf8Bytes(parameters),
+			data: JsonSerializer.SerializeToUtf8Bytes(message),
 			cancellationToken: cancellationToken);
 	}
 }
