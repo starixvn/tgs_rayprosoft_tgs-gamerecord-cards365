@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Tgs.GameInterface.Cards365.Client;
 using Tgs.ServiceUtility;
 
@@ -77,23 +78,32 @@ internal class SchedulePullRecordCommandService(
 					nextExternalBetId = last.ExternalWagerId;
 				}
 
-				logger.LogDebug("Extension1:{extension1} | NextTime:{nextTime} | NextExternalWagerId:{nextExternalWagerId}", command.Extension1, nextTime.ToString("O"), nextExternalBetId);
-
 				foreach (var gameWagerInfo in gameWagerInfos)
 				{
-					logger.LogDebug("LogOn:{logOn} Message: Settlement. GameRecords:{gameRecord}", DateTime.Now.ToString("o"), gameWagerInfo);
-
 					try
 					{
-						await service
-							.ExecuteAsync(
-								command: new(gameWagerInfo),
-								cancellationToken: cancellationToken)
+						await service.ExecuteAsync(
+							command: new(gameWagerInfo),
+							cancellationToken: cancellationToken)
 							.ConfigureAwait(false);
 					}
 					catch (Exception ex)
 					{
-						logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({gameWagerInfo})", DateTime.Now.ToString("o"), gameWagerInfo);
+						logger.LogError(ex, "{logError}",
+							JsonSerializer.Serialize(new
+							{
+								LogOn = DateTime.Now.ToString("u"),
+								Data = new
+								{
+									gameWagerInfo.PlayerCode,
+									gameWagerInfo.ExternalRoundId,
+									gameWagerInfo.ExternalWagerId,
+									gameWagerInfo.ExternalGameId,
+									ExternalCreatedOn = gameWagerInfo.ExternalCreatedOn.ToDateTimeOffset().ToString("u"),
+									ExternalClosedOn = gameWagerInfo.ExternalClosedOn.ToDateTimeOffset().ToString("u")
+								},
+								Message = "An exception occurred in this game wager."
+							}));
 					}
 				}
 			}

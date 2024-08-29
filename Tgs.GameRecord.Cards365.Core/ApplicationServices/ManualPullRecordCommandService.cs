@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Tgs.GameInterface.Cards365.Client;
 using Tgs.GameInterface.Cards365.Protos;
 using Tgs.ServiceUtility;
@@ -29,25 +30,34 @@ internal class ManualPullRecordCommandService(
 			.ConfigureAwait(false)
 			?? Enumerable.Empty<GameWagerInfo>();
 
-		_logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{betGameWagerInfos}", DateTime.Now.ToString("o"), betGameWagerInfos);
-
 		if (betGameWagerInfos.Any())
 		{
 			foreach (var betGameWagerInfo in betGameWagerInfos)
 			{
-				_logger.LogDebug("LogOn:{logOn} Message: GameRecord Unsettlement. GameRecords:{betGameWagerInfo}", DateTime.Now.ToString("o"), betGameWagerInfo);
-
 				try
 				{
-					await _service
-						.ExecuteAsync(
-							command: new(betGameWagerInfo),
-							cancellationToken: cancellationToken)
+					await _service.ExecuteAsync(
+						command: new(betGameWagerInfo),
+						cancellationToken: cancellationToken)
 						.ConfigureAwait(false);
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({betGameWagerInfo})", DateTime.Now.ToString("o"), betGameWagerInfo);
+					logger.LogError(ex, "{logError}",
+						JsonSerializer.Serialize(new
+						{
+							LogOn = DateTime.Now.ToString("u"),
+							Data = new
+							{
+								betGameWagerInfo.PlayerCode,
+								betGameWagerInfo.ExternalRoundId,
+								betGameWagerInfo.ExternalWagerId,
+								betGameWagerInfo.ExternalGameId,
+								ExternalCreatedOn = betGameWagerInfo.ExternalCreatedOn.ToDateTimeOffset().ToString("u"),
+								ExternalClosedOn = betGameWagerInfo.ExternalClosedOn.ToDateTimeOffset().ToString("u")
+							},
+							Message = "An exception occurred in this game wager."
+						}));
 				}
 			}
 		}
@@ -65,14 +75,10 @@ internal class ManualPullRecordCommandService(
 			.ConfigureAwait(false)
 			?? Enumerable.Empty<GameWagerInfo>();
 
-		_logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameWagerInfos}", DateTime.Now.ToString("o"), payGameWagerInfos);
-
 		if (payGameWagerInfos.Any())
 		{
 			foreach (var payGameWagerInfo in payGameWagerInfos)
 			{
-				_logger.LogDebug("LogOn:{logOn} Message: GameRecord Settlement. GameRecords:{payGameWagerInfo}", DateTime.Now.ToString("o"), payGameWagerInfo);
-
 				try
 				{
 					await _service
@@ -83,7 +89,21 @@ internal class ManualPullRecordCommandService(
 				}
 				catch (Exception ex)
 				{
-					_logger.LogError(ex, "LogOn:{logOn} Message: An exception occurred in this game record.({payGameWagerInfo})", DateTime.Now.ToString("o"), payGameWagerInfo);
+					logger.LogError(ex, "{logError}",
+						JsonSerializer.Serialize(new
+						{
+							LogOn = DateTime.Now.ToString("u"),
+							Data = new
+							{
+								payGameWagerInfo.PlayerCode,
+								payGameWagerInfo.ExternalRoundId,
+								payGameWagerInfo.ExternalWagerId,
+								payGameWagerInfo.ExternalGameId,
+								ExternalCreatedOn = payGameWagerInfo.ExternalCreatedOn.ToDateTimeOffset().ToString("u"),
+								ExternalClosedOn = payGameWagerInfo.ExternalClosedOn.ToDateTimeOffset().ToString("u")
+							},
+							Message = "An exception occurred in this game wager."
+						}));
 				}
 			}
 		}
